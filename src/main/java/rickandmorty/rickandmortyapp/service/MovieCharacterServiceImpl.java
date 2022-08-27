@@ -30,7 +30,6 @@ public class MovieCharacterServiceImpl implements MovieCharacterService {
                                        MovieCharacterMapper movieCharacterMapper) {
         this.httpClient = httpClient;
         this.movieCharacterRepository = movieCharacterRepository;
-
         this.movieCharacterMapper = movieCharacterMapper;
     }
 
@@ -69,32 +68,20 @@ public class MovieCharacterServiceImpl implements MovieCharacterService {
                 .collect(Collectors.toMap(MovieCharacter::getExternalId, Function.identity()));
         Set<Long> existingIds = existingCharactersWithIds.keySet();
 
-//        existingIds.retainAll(externalIds);
-//        List<MovieCharacter> charactersToUpdate = existingIds.stream()
-//                .map(i -> cartoonCharacterMapper
-//                        .toModel(externalDtos.get(i)))
-//                .collect(Collectors.toList());
-//        if (charactersToUpdate.size() > 0) {
-//            updateCharacters(charactersToUpdate, externalDtos);
-//        }
-//
-//        existingIds = existingCharactersWithIds.keySet();
+        existingIds.retainAll(externalIds);
+        List<MovieCharacter> toUpdate = existingCharacters.stream()
+                .peek(i -> i.setName(externalDtos.get(i.getExternalId()).getName()))
+                .peek(i -> i.setStatus(Status.valueOf(externalDtos.get(i.getExternalId()).getStatus().toUpperCase())))
+                .peek(i -> i.setGender(Gender.valueOf(externalDtos.get(i.getExternalId()).getGender().toUpperCase())))
+                .toList();
+        movieCharacterRepository.saveAll(toUpdate);
 
+        existingIds = existingCharactersWithIds.keySet();
         externalIds.removeAll(existingIds);
         List<MovieCharacter> charactersToSave = externalIds.stream()
                 .map(i -> movieCharacterMapper
                         .toModel(externalDtos.get(i)))
                 .collect(Collectors.toList());
         movieCharacterRepository.saveAll(charactersToSave);
-
-    }
-
-    private void updateCharacters(List<MovieCharacter> charactersToUpdate, Map<Long, ApiCharacterDto> externalDtos) {
-        List<MovieCharacter> toUpdate = charactersToUpdate.stream()
-                .peek(i -> i.setName(externalDtos.get(i.getExternalId()).getName()))
-                .peek(i -> i.setStatus(Status.valueOf(externalDtos.get(i.getExternalId()).getStatus().toUpperCase())))
-                .peek(i -> i.setGender(Gender.valueOf(externalDtos.get(i.getExternalId()).getGender().toUpperCase())))
-                .toList();
-        movieCharacterRepository.saveAll(toUpdate);
     }
 }
