@@ -1,6 +1,7 @@
 package rickandmorty.rickandmortyapp.controller;
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import java.util.List;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,6 @@ import rickandmorty.rickandmortyapp.model.Gender;
 import rickandmorty.rickandmortyapp.model.MovieCharacter;
 import rickandmorty.rickandmortyapp.model.Status;
 import rickandmorty.rickandmortyapp.service.MovieCharacterService;
-import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -33,8 +33,30 @@ class MovieCharacterControllerTest {
     }
 
     @Test
+    void getRandomCharacter_ok() {
+        MovieCharacter jerry = new MovieCharacter();
+        jerry.setId(5L);
+        jerry.setExternalId(5L);
+        jerry.setName("Jerry Smith");
+        jerry.setStatus(Status.ALIVE);
+        jerry.setGender(Gender.MALE);
+
+        Mockito.when(movieCharacterService.getRandomCharacters()).thenReturn(jerry);
+
+        RestAssuredMockMvc.when()
+                .get("/movie-characters/random")
+                .then()
+                .statusCode(200)
+                .body("id", Matchers.equalTo(5))
+                .body("externalId", Matchers.equalTo(5))
+                .body("name", Matchers.equalTo("Jerry Smith"))
+                .body("gender", Matchers.equalTo("MALE"))
+                .body("status", Matchers.equalTo("ALIVE"));
+    }
+
+    @Test
     void shouldFindAllCharactersByName() {
-        String name = "Sum";
+        final String name = "Sum";
         MovieCharacter summerSmith = new MovieCharacter();
         summerSmith.setName("Summer Smith");
         summerSmith.setGender(Gender.FEMALE);

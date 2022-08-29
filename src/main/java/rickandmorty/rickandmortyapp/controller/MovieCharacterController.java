@@ -1,5 +1,7 @@
 package rickandmorty.rickandmortyapp.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -8,9 +10,6 @@ import rickandmorty.rickandmortyapp.dto.MovieResponseDto;
 import rickandmorty.rickandmortyapp.model.MovieCharacter;
 import rickandmorty.rickandmortyapp.service.MovieCharacterService;
 import rickandmorty.rickandmortyapp.service.mapper.MovieCharacterMapper;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/movie-characters")

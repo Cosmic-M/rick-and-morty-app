@@ -1,5 +1,13 @@
 package rickandmorty.rickandmortyapp.service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -10,10 +18,6 @@ import rickandmorty.rickandmortyapp.model.MovieCharacter;
 import rickandmorty.rickandmortyapp.model.Status;
 import rickandmorty.rickandmortyapp.repository.MovieCharacterRepository;
 import rickandmorty.rickandmortyapp.service.mapper.MovieCharacterMapper;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -33,11 +37,10 @@ public class MovieCharacterServiceImpl implements MovieCharacterService {
     @Scheduled(cron = "30 8 * * * ?")
     @Override
     public void syncExternalCharacters() {
-        List<MovieCharacter> toSave = new ArrayList<>();
         log.info("syncExternalCharacters was called at " + LocalDateTime.now());
         ApiResponseDto responseDto = httpClient
                 .get("https://rickandmortyapi.com/api/character", ApiResponseDto.class);
-        toSave.addAll(getListToSave(responseDto));
+        List<MovieCharacter> toSave = new ArrayList<>(getListToSave(responseDto));
         while (responseDto.getInfo().getNext() != null) {
             responseDto = httpClient.get(responseDto.getInfo().getNext(), ApiResponseDto.class);
             toSave.addAll(getListToSave(responseDto));
@@ -70,8 +73,10 @@ public class MovieCharacterServiceImpl implements MovieCharacterService {
         existingIds.retainAll(externalIds);
         List<MovieCharacter> toUpdate = new java.util.ArrayList<>(existingCharacters.stream()
                 .peek(i -> i.setName(externalDtos.get(i.getExternalId()).getName()))
-                .peek(i -> i.setStatus(Status.valueOf(externalDtos.get(i.getExternalId()).getStatus().toUpperCase())))
-                .peek(i -> i.setGender(Gender.valueOf(externalDtos.get(i.getExternalId()).getGender().toUpperCase())))
+                .peek(i -> i.setStatus(Status.valueOf(externalDtos.get(i
+                        .getExternalId()).getStatus().toUpperCase())))
+                .peek(i -> i.setGender(Gender.valueOf(externalDtos
+                        .get(i.getExternalId()).getGender().toUpperCase())))
                 .toList());
 
         existingIds = existingCharactersWithIds.keySet();

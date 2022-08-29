@@ -1,5 +1,10 @@
 package rickandmorty.rickandmortyapp.service;
 
+import static org.mockito.ArgumentMatchers.any;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,10 +21,6 @@ import rickandmorty.rickandmortyapp.model.MovieCharacter;
 import rickandmorty.rickandmortyapp.model.Status;
 import rickandmorty.rickandmortyapp.repository.MovieCharacterRepository;
 import rickandmorty.rickandmortyapp.service.mapper.MovieCharacterMapper;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class MovieCharacterServiceImplTest {
@@ -61,17 +62,21 @@ class MovieCharacterServiceImplTest {
 
     @Test
     void addNewCharacterToListToSave_oK() {
-        Mockito.when(movieCharacterRepository.findAllByExternalIdIn(any())).thenReturn(Collections.emptyList());
+        Mockito.when(movieCharacterRepository
+                .findAllByExternalIdIn(any())).thenReturn(Collections.emptyList());
         Mockito.when(movieCharacterMapper.toModel(apiCharacterDto)).thenReturn(rick);
         Assertions.assertEquals(1, movieCharacterService.getListToSave(apiResponseDto).size());
-        Assertions.assertEquals("Rick Sanchez", movieCharacterService.getListToSave(apiResponseDto).get(0).getName());
+        Assertions.assertEquals("Rick Sanchez", movieCharacterService
+                .getListToSave(apiResponseDto).get(0).getName());
     }
 
     @Test
     void updateDataInExistingCharacterList_oK() {
         apiCharacterDto.setName("Goofy Rick from University 1f564");
-        Mockito.when(movieCharacterRepository.findAllByExternalIdIn(Set.of(1L))).thenReturn(List.of(rick));
+        Mockito.when(movieCharacterRepository
+                .findAllByExternalIdIn(Set.of(1L))).thenReturn(List.of(rick));
         Assertions.assertEquals(1, movieCharacterService.getListToSave(apiResponseDto).size());
-        Assertions.assertEquals("Goofy Rick from University 1f564", movieCharacterService.getListToSave(apiResponseDto).get(0).getName());
+        Assertions.assertEquals("Goofy Rick from University 1f564", movieCharacterService
+                .getListToSave(apiResponseDto).get(0).getName());
     }
 }

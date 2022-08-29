@@ -1,8 +1,7 @@
 package rickandmorty.rickandmortyapp.service;
 
-import rickandmorty.rickandmortyapp.model.MovieCharacter;
-
 import java.util.List;
+import rickandmorty.rickandmortyapp.model.MovieCharacter;
 
 public interface MovieCharacterService {
     void syncExternalCharacters();
