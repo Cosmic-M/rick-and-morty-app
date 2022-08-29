@@ -11,10 +11,7 @@ import rickandmorty.rickandmortyapp.model.Status;
 import rickandmorty.rickandmortyapp.repository.MovieCharacterRepository;
 import rickandmorty.rickandmortyapp.service.mapper.MovieCharacterMapper;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -36,14 +33,16 @@ public class MovieCharacterServiceImpl implements MovieCharacterService {
     @Scheduled(cron = "30 8 * * * ?")
     @Override
     public void syncExternalCharacters() {
+        List<MovieCharacter> toSave = new ArrayList<>();
         log.info("syncExternalCharacters was called at " + LocalDateTime.now());
         ApiResponseDto responseDto = httpClient
                 .get("https://rickandmortyapi.com/api/character", ApiResponseDto.class);
-        saveDtosToDb(responseDto);
+        toSave.addAll(getListToSave(responseDto));
         while (responseDto.getInfo().getNext() != null) {
             responseDto = httpClient.get(responseDto.getInfo().getNext(), ApiResponseDto.class);
-            saveDtosToDb(responseDto);
+            toSave.addAll(getListToSave(responseDto));
         }
+        movieCharacterRepository.saveAll(toSave);
     }
 
     @Override
@@ -58,7 +57,7 @@ public class MovieCharacterServiceImpl implements MovieCharacterService {
         return movieCharacterRepository.findAllByNameContains(namePart);
     }
 
-    private void saveDtosToDb(ApiResponseDto responseDto) {
+    List<MovieCharacter> getListToSave(ApiResponseDto responseDto) {
         Map<Long, ApiCharacterDto> externalDtos = Arrays.stream(responseDto.getResults())
                 .collect(Collectors.toMap(ApiCharacterDto::getId, Function.identity()));
         Set<Long> externalIds = externalDtos.keySet();
@@ -69,12 +68,11 @@ public class MovieCharacterServiceImpl implements MovieCharacterService {
         Set<Long> existingIds = existingCharactersWithIds.keySet();
 
         existingIds.retainAll(externalIds);
-        List<MovieCharacter> toUpdate = existingCharacters.stream()
+        List<MovieCharacter> toUpdate = new java.util.ArrayList<>(existingCharacters.stream()
                 .peek(i -> i.setName(externalDtos.get(i.getExternalId()).getName()))
                 .peek(i -> i.setStatus(Status.valueOf(externalDtos.get(i.getExternalId()).getStatus().toUpperCase())))
                 .peek(i -> i.setGender(Gender.valueOf(externalDtos.get(i.getExternalId()).getGender().toUpperCase())))
-                .toList();
-        movieCharacterRepository.saveAll(toUpdate);
+                .toList());
 
         existingIds = existingCharactersWithIds.keySet();
         externalIds.removeAll(existingIds);
@@ -82,6 +80,7 @@ public class MovieCharacterServiceImpl implements MovieCharacterService {
                 .map(i -> movieCharacterMapper
                         .toModel(externalDtos.get(i)))
                 .collect(Collectors.toList());
-        movieCharacterRepository.saveAll(charactersToSave);
+        charactersToSave.addAll(toUpdate);
+        return charactersToSave;
     }
 }
