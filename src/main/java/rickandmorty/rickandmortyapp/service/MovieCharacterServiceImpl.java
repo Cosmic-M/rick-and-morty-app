@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class MovieCharacterServiceImpl implements MovieCharacterService {
         this.movieCharacterMapper = movieCharacterMapper;
     }
 
+    @PostConstruct
     @Scheduled(cron = "30 8 * * * ?")
     @Override
     public void syncExternalCharacters() {
@@ -52,7 +54,7 @@ public class MovieCharacterServiceImpl implements MovieCharacterService {
     public MovieCharacter getRandomCharacters() {
         long count = movieCharacterRepository.count();
         long randomId = (long) (Math.random() * count);
-        return movieCharacterRepository.getById(randomId);
+        return movieCharacterRepository.findByRandomId(randomId);
     }
 
     @Override
