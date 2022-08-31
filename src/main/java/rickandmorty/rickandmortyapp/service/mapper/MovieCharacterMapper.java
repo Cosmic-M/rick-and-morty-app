@@ -27,4 +27,11 @@ public class MovieCharacterMapper {
         responseDto.setStatus(character.getStatus());
         return responseDto;
     }
+
+    public MovieCharacter updateModel(MovieCharacter existing, ApiCharacterDto fromSite) {
+        existing.setName(fromSite.getName());
+        existing.setGender(Gender.valueOf(fromSite.getGender().toUpperCase()));
+        existing.setStatus(Status.valueOf(fromSite.getStatus().toUpperCase()));
+        return existing;
+    }
 }

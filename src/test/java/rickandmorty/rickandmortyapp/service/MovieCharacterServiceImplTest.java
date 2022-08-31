@@ -73,9 +73,14 @@ class MovieCharacterServiceImplTest {
     @Test
     void updateDataInExistingCharacterList_oK() {
         apiCharacterDto.setName("Goofy Rick from University 1f564");
+        MovieCharacter updatedRick = rick;
+        updatedRick.setName("Goofy Rick from University 1f564");
         Mockito.when(movieCharacterRepository
                 .findAllByExternalIdIn(Set.of(1L))).thenReturn(List.of(rick));
-        Assertions.assertEquals(1, movieCharacterService.getListToSave(apiResponseDto).size());
+        Mockito.when(movieCharacterMapper.updateModel(rick, apiCharacterDto))
+                .thenReturn(updatedRick);
+        Assertions.assertEquals(1, movieCharacterService
+                .getListToSave(apiResponseDto).size());
         Assertions.assertEquals("Goofy Rick from University 1f564", movieCharacterService
                 .getListToSave(apiResponseDto).get(0).getName());
     }

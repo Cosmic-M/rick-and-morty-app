@@ -53,4 +53,16 @@ class MovieCharacterMapperTest {
         Assertions.assertEquals(Gender.MALE, result.getGender());
         Assertions.assertEquals(Status.ALIVE, result.getStatus());
     }
+
+    @Test
+    void updateMovieCharacter_ok() {
+        rickApiDto.setName("Dumb Rick From C179");
+        rickApiDto.setStatus("Dead");
+        MovieCharacter result = mapper.updateModel(rick, rickApiDto);
+        Assertions.assertEquals(1L, result.getId());
+        Assertions.assertEquals(1L, result.getExternalId());
+        Assertions.assertEquals("Dumb Rick From C179", result.getName());
+        Assertions.assertEquals(Gender.MALE, result.getGender());
+        Assertions.assertEquals(Status.DEAD, result.getStatus());
+    }
 }

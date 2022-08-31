@@ -3,6 +3,7 @@ package rickandmorty.rickandmortyapp.controller;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,16 +14,11 @@ import rickandmorty.rickandmortyapp.service.MovieCharacterService;
 import rickandmorty.rickandmortyapp.service.mapper.MovieCharacterMapper;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/movie-characters")
 public class MovieCharacterController {
     private final MovieCharacterService movieCharacterService;
     private final MovieCharacterMapper mapper;
-
-    public MovieCharacterController(MovieCharacterService movieCharacterService,
-                                    MovieCharacterMapper mapper) {
-        this.movieCharacterService = movieCharacterService;
-        this.mapper = mapper;
-    }
 
     @GetMapping("/random")
     @ApiOperation(value = "get random movie character from DB")

@@ -9,39 +9,35 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rickandmorty.rickandmortyapp.dto.ApiCharacterDto;
 import rickandmorty.rickandmortyapp.dto.ApiResponseDto;
-import rickandmorty.rickandmortyapp.model.Gender;
 import rickandmorty.rickandmortyapp.model.MovieCharacter;
-import rickandmorty.rickandmortyapp.model.Status;
 import rickandmorty.rickandmortyapp.repository.MovieCharacterRepository;
 import rickandmorty.rickandmortyapp.service.mapper.MovieCharacterMapper;
 
 @Log4j2
 @Service
+@RequiredArgsConstructor
 public class MovieCharacterServiceImpl implements MovieCharacterService {
     private final HttpClient httpClient;
     private final MovieCharacterRepository movieCharacterRepository;
     private final MovieCharacterMapper movieCharacterMapper;
-
-    public MovieCharacterServiceImpl(HttpClient httpClient,
-                                       MovieCharacterRepository movieCharacterRepository,
-                                       MovieCharacterMapper movieCharacterMapper) {
-        this.httpClient = httpClient;
-        this.movieCharacterRepository = movieCharacterRepository;
-        this.movieCharacterMapper = movieCharacterMapper;
-    }
+    @Value(value = "${link}")
+    private String linkToApiRickAndMorty;
 
     @PostConstruct
-    @Scheduled(cron = "30 8 * * * ?")
+    @Scheduled(cron = "0 30 8 * * ?", zone = "Europe/Kiev")
     @Override
     public void syncExternalCharacters() {
         log.info("syncExternalCharacters was called at " + LocalDateTime.now());
+
         ApiResponseDto responseDto = httpClient
-                .get("https://rickandmortyapi.com/api/character", ApiResponseDto.class);
+                .get(linkToApiRickAndMorty, ApiResponseDto.class);
         List<MovieCharacter> toSave = new ArrayList<>(getListToSave(responseDto));
         while (responseDto.getInfo().getNext() != null) {
             responseDto = httpClient.get(responseDto.getInfo().getNext(), ApiResponseDto.class);
@@ -74,11 +70,7 @@ public class MovieCharacterServiceImpl implements MovieCharacterService {
 
         existingIds.retainAll(externalIds);
         List<MovieCharacter> toUpdate = new java.util.ArrayList<>(existingCharacters.stream()
-                .peek(i -> i.setName(externalDtos.get(i.getExternalId()).getName()))
-                .peek(i -> i.setStatus(Status.valueOf(externalDtos.get(i
-                        .getExternalId()).getStatus().toUpperCase())))
-                .peek(i -> i.setGender(Gender.valueOf(externalDtos
-                        .get(i.getExternalId()).getGender().toUpperCase())))
+                .map(i -> movieCharacterMapper.updateModel(i, externalDtos.get(i.getExternalId())))
                 .toList());
 
         existingIds = existingCharactersWithIds.keySet();
