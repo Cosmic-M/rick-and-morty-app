@@ -16,7 +16,7 @@ services:
   app:
     depends_on:
       - postgres
-    image: cosmic/postgres-app
+    image: cosmic-m/rick-and-morty
     build: .
     env_file: ./.env
     ports:
