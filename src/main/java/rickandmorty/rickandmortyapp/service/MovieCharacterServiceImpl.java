@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rickandmorty.rickandmortyapp.dto.ApiCharacterDto;
@@ -22,6 +23,7 @@ import rickandmorty.rickandmortyapp.service.mapper.MovieCharacterMapper;
 
 @Log4j2
 @Service
+@EnableScheduling
 @RequiredArgsConstructor
 public class MovieCharacterServiceImpl implements MovieCharacterService {
     private final HttpClient httpClient;
