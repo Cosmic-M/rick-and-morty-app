@@ -9,4 +9,6 @@ public interface MovieCharacterService {
     MovieCharacter getRandomCharacters();
 
     List<MovieCharacter> findAllByNameContains(String namePart);
+
+    List<MovieCharacter> findAll();
 }

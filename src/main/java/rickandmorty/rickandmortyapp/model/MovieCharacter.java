@@ -24,6 +24,7 @@ public class MovieCharacter {
     private Long id;
     private Long externalId;
     private String name;
+    private String imageUrl;
     @Enumerated(EnumType.STRING)
     private Status status;
     @Enumerated(EnumType.STRING)

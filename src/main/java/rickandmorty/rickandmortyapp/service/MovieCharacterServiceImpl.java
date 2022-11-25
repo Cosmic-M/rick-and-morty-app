@@ -84,4 +84,9 @@ public class MovieCharacterServiceImpl implements MovieCharacterService {
         charactersToSave.addAll(toUpdate);
         return charactersToSave;
     }
+
+    @Override
+    public List<MovieCharacter> findAll() {
+        return movieCharacterRepository.findAll();
+    }
 }

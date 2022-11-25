@@ -13,6 +13,7 @@ public class MovieCharacterMapper {
         MovieCharacter character = new MovieCharacter();
         character.setExternalId(characterDto.getId());
         character.setName(characterDto.getName());
+        character.setImageUrl(characterDto.getImage());
         character.setStatus(Status.valueOf(characterDto.getStatus().toUpperCase()));
         character.setGender(Gender.valueOf(characterDto.getGender().toUpperCase()));
         return character;
@@ -23,6 +24,7 @@ public class MovieCharacterMapper {
         responseDto.setId(character.getId());
         responseDto.setExternalId(character.getExternalId());
         responseDto.setName(character.getName());
+        responseDto.setImageUrl(character.getImageUrl());
         responseDto.setGender(character.getGender());
         responseDto.setStatus(character.getStatus());
         return responseDto;
@@ -30,6 +32,7 @@ public class MovieCharacterMapper {
 
     public MovieCharacter updateModel(MovieCharacter existing, ApiCharacterDto fromSite) {
         existing.setName(fromSite.getName());
+        existing.setImageUrl(fromSite.getImage());
         existing.setGender(Gender.valueOf(fromSite.getGender().toUpperCase()));
         existing.setStatus(Status.valueOf(fromSite.getStatus().toUpperCase()));
         return existing;

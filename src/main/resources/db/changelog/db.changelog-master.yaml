@@ -5,3 +5,5 @@ databaseChangeLog:
       file: db/changelog/changes/create-movie-character-table.sql
   - include:
       file: db/changelog/changes/add-external-id-column-to-movie-character-table.sql
+  - include:
+      file: db/changelog/changes/add-url-image-column-to-movie-character-table.sql

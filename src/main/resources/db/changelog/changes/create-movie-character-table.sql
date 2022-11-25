@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS public.movie_character
     status character varying(256) NOT NULL,
     gender character varying(256) NOT NULL,
     CONSTRAINT movie_character_pk PRIMARY KEY (id)
+
     );
 
 --rollback DROP TABLE movie_character;

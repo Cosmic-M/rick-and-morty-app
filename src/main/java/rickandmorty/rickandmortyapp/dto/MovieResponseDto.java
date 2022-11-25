@@ -9,6 +9,7 @@ public class MovieResponseDto {
     private Long id;
     private Long externalId;
     private String name;
+    private String imageUrl;
     private Gender gender;
     private Status status;
 }
